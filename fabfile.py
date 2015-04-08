@@ -59,6 +59,7 @@ def setup_concrete5():
 
     # packages download
     with cd('/var/www/html/'):
+        # TODO githubからの直接落としてくればいい感じにかけそう
         sudo('curl -L http://www.concrete5.org/download_file/-/view/74619/ > concrete5.zip')
         sudo('unzip concrete5.zip && rm concrete5.zip && mv concrete5* concrete5')
 
@@ -75,34 +76,11 @@ def restart_application():
     sudo('/etc/init.d/apache2 restart')
 
 @task
-def setup_original():
-    puts(green('setup original'))
-
-    # ssh
-    run('echo "Host github.com" > $HOME/.ssh/config')
-    run('echo "     HostName github.com" >> $HOME/.ssh/config')
-    run('echo "     User git" >> $HOME/.ssh/config')
-    run('echo "     StrictHostKeyChecking no" >> $HOME/.ssh/config')
-    run('chmod 600 $HOME/.ssh/config')
-
-    # dotfiles
-    run('git clone git@github.com:okbm/dotfiles.git')
-    run('WORK=$HOME/');
-
-    # composer
-    run("curl -sS https://getcomposer.org/installer | php")
-    sudo("mv composer.phar /usr/local/bin/composer")
-    run('composer global require "phpunit/phpunit=4.5.*"')
-    run('echo PATH="$PATH":~/.composer/vendor/bin/ >> ~/.bashrc')
-
-@task
 def main():
     update_packages()
     setup_devtools()
     setup_packages()
     setup_concrete5()
     restart_application()
-
-    setup_original()
 
     puts(green('finish script'))
